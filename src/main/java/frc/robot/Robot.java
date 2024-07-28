@@ -52,23 +52,25 @@ public class Robot extends TimedRobot {
     left_leader.restoreFactoryDefaults();
 
     left_follower1 = new CANSparkMax(1, MotorType.kBrushless);
-    left_follower1.follow(left_leader);
     left_follower1.restoreFactoryDefaults();
+    left_follower1.follow(left_leader);
+    
 
     left_follower2 = new CANSparkMax(2, MotorType.kBrushless);
-    left_follower2.follow(left_leader);
     left_follower2.restoreFactoryDefaults();
+    left_follower2.follow(left_leader);
+    
 
     right_leader = new CANSparkMax(3, MotorType.kBrushless);
     right_leader.restoreFactoryDefaults();
 
     right_follower1 = new CANSparkMax(4, MotorType.kBrushless);
-    right_follower1.follow(right_leader);
     right_follower1.restoreFactoryDefaults();
+    right_follower1.follow(right_leader);
 
     right_follower2 = new CANSparkMax(5, MotorType.kBrushless);
-    right_follower2.follow(right_leader);
     right_follower2.restoreFactoryDefaults();
+    right_follower2.follow(right_leader);
 
     m_myRobot = new DifferentialDrive(left_leader, right_leader);
 
