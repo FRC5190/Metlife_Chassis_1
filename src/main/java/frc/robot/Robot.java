@@ -31,10 +31,8 @@ public class Robot extends TimedRobot {
   private CommandXboxController controller_;
   private CANSparkMax left_leader;
   private CANSparkMax left_follower1;
-  private CANSparkMax left_follower2;
   private CANSparkMax right_leader;
   private CANSparkMax right_follower1;
-  private CANSparkMax right_follower2;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -55,10 +53,6 @@ public class Robot extends TimedRobot {
     left_follower1.restoreFactoryDefaults();
     left_follower1.follow(left_leader);
     
-
-    left_follower2 = new CANSparkMax(2, MotorType.kBrushless);
-    left_follower2.restoreFactoryDefaults();
-    left_follower2.follow(left_leader);
     
 
     right_leader = new CANSparkMax(3, MotorType.kBrushless);
@@ -67,10 +61,6 @@ public class Robot extends TimedRobot {
     right_follower1 = new CANSparkMax(4, MotorType.kBrushless);
     right_follower1.restoreFactoryDefaults();
     right_follower1.follow(right_leader);
-
-    right_follower2 = new CANSparkMax(5, MotorType.kBrushless);
-    right_follower2.restoreFactoryDefaults();
-    right_follower2.follow(right_leader);
 
     m_myRobot = new DifferentialDrive(left_leader, right_leader);
 
