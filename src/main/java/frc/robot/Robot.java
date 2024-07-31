@@ -46,10 +46,10 @@ public class Robot extends TimedRobot {
 
 
     // CAN ID should be configured using REV Hardware Client
-    left_leader = new CANSparkMax(0, MotorType.kBrushless);
+    left_leader = new CANSparkMax(1, MotorType.kBrushless);
     left_leader.restoreFactoryDefaults();
 
-    left_follower1 = new CANSparkMax(1, MotorType.kBrushless);
+    left_follower1 = new CANSparkMax(2, MotorType.kBrushless);
     left_follower1.restoreFactoryDefaults();
     left_follower1.follow(left_leader);
     
