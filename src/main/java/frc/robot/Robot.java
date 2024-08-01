@@ -7,6 +7,7 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -33,6 +34,7 @@ public class Robot extends TimedRobot {
   private CANSparkMax left_follower1;
   private CANSparkMax right_leader;
   private CANSparkMax right_follower1;
+  private SlewRateLimiter filter;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -65,6 +67,8 @@ public class Robot extends TimedRobot {
     m_myRobot = new DifferentialDrive(left_leader, right_leader);
 
     controller_ = new CommandXboxController(0);
+
+    filter = new SlewRateLimiter(0.2);
     
 
   }
@@ -79,7 +83,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     //m_myRobot.tankDrive(controller_.getLeftY(), controller_.getRightY());
-    m_myRobot.arcadeDrive(controller_.getLeftY(), controller_.getRightX());
+    m_myRobot.arcadeDrive(filter.calculate(controller_.getLeftY()), controller_.getRightX());
 
   }
 
