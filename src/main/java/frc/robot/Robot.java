@@ -12,7 +12,15 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Feeder;
+import frc.robot.Superstructure;
+import frc.robot.commands.DriveTeleop;
+import frc.robot.subsystems.DriveTrain;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -21,20 +29,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  * project.
  */
 public class Robot extends TimedRobot {
-  // private static final String kDefaultAuto = "Default";
-  // private static final String kCustomAuto = "My Auto";
-  // private String m_autoSelected;
-  // private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  // private Drivetrain drivetrain_ = new Drivetrain();
-  // private CommandXboxController controller_ = new CommandXboxController(0);
 
-  private DifferentialDrive m_myRobot;
-  private CommandXboxController controller_;
-  private CANSparkMax left_leader;
-  private CANSparkMax left_follower1;
-  private CANSparkMax right_leader;
-  private CANSparkMax right_follower1;
-  private SlewRateLimiter filter;
+  private CommandXboxController driver_controller_;
+  private final DriveTrain drivetrain_ = new DriveTrain();
+  private final Intake intake_ = new Intake();
+  private final Shooter shooter_ = new Shooter();
+  private final Feeder feeder_ = new Feeder();
+  private final Superstructure superstructure_ = new Superstructure(intake_, shooter_, feeder_);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -42,33 +43,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    // m_chooser.addOption("My Auto", kCustomAuto);
-    // SmartDashboard.putData("Auto choices", m_chooser);
-
-
-    // CAN ID should be configured using REV Hardware Client
-    left_leader = new CANSparkMax(1, MotorType.kBrushless);
-    left_leader.restoreFactoryDefaults();
-
-    left_follower1 = new CANSparkMax(2, MotorType.kBrushless);
-    left_follower1.restoreFactoryDefaults();
-    left_follower1.follow(left_leader);
     
-    
+    drivetrain_.stopMotor();
+    drivetrain_.setDefaultCommand(new DriveTeleop(drivetrain_, driver_controller_));
 
-    right_leader = new CANSparkMax(3, MotorType.kBrushless);
-    right_leader.restoreFactoryDefaults();
-
-    right_follower1 = new CANSparkMax(4, MotorType.kBrushless);
-    right_follower1.restoreFactoryDefaults();
-    right_follower1.follow(right_leader);
-
-    m_myRobot = new DifferentialDrive(left_leader, right_leader);
-
-    controller_ = new CommandXboxController(0);
-
-    filter = new SlewRateLimiter(0.2);
+    setupTeleopControls();
     
 
   }
@@ -82,8 +61,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
     //m_myRobot.tankDrive(controller_.getLeftY(), controller_.getRightY());
-    m_myRobot.arcadeDrive(filter.calculate(controller_.getLeftY()), controller_.getRightX());
+    //m_myRobot.arcadeDrive(filter.calculate(driver_controller_.getLeftY()), driver_controller_.getRightX());
+    SmartDashboard.putNumber("Shooter Percent", shooter_.getPercent());
+    SmartDashboard.putNumber("Left Intake Percent", intake_.getLeftIntakePercent());
+    SmartDashboard.putNumber("Right Intake Percent", intake_.getRightIntakePercent());
 
   }
 
@@ -128,7 +111,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    
+  }
 
   /** This function is called periodically when disabled. */
   @Override
@@ -149,4 +134,11 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
+
+  public void setupTeleopControls() {
+    // driver controller
+    driver_controller_.rightTrigger().whileTrue(superstructure_.setShooter(-0.75));
+    driver_controller_.leftTrigger().whileTrue(superstructure_.setIntake(0.15));
+    driver_controller_.a().whileTrue(superstructure_.setFeeder(0.5));
+  }
 }
